@@ -37,6 +37,10 @@ class Game(arcade.Window):
         self.chickens = []
         self.foxes = []
         self.plants = []
+
+        # init selected chicken
+        self.selected_chiken = None
+
         # create obj
         self._create_obj(game_grid)
 
@@ -100,22 +104,24 @@ class Game(arcade.Window):
         #     arcade.draw_rectangle_outline(x, y, CELL_SIZE, CELL_SIZE, arcade.color.RED, 5)
 
                 
-    # def on_mouse_press(self, x, y, button, modifiers):
-    #     """Click mouse"""
-    #     col = x // CELL_SIZE
-    #     row = y // CELL_SIZE
+    def on_mouse_click(self, x, y, button, modifiers):
+        """Click mouse"""
+        col = x // CELL_SIZE
+        row = y // CELL_SIZE
 
-    #     # Mouse click on chiken ??
-    #     if 0 <= col < GRID_SIZE and 0 <= row < GRID_SIZE:
-    #         if self.game_grid[row][col] == "C":
-    #             # It is last chiken
-    #             if self.selected_chicken == (row, col):
-    #                 self.selected_chicken = None
-    #             else:
-    #                 # Selected chiken
-    #                 self.selected_chicken = (row, col)
-    #         else:
-    #             self.selected_chicken = None
+        # Mouse click on chiken ??
+        for chicken in self.chickens:
+            if chicken.grid_position == (col, row):
+                if self.selected_chicken == chicken:
+                    self.selected_chiсken.on_click()
+                    self.selected_chiсken = None
+                else:
+                    self.selected_chiсken.on_click()
+                    chicken.on_click()
+                    self.selected_chiсken = chicken
+                
+                
+                
 
 
     # def on_key_press(self, symbol, modifiers):
