@@ -52,6 +52,7 @@ class Game(arcade.Window):
         self.turn = "chicken"  
 
     def _create_obj(self, game_grid):
+        # create obj in game grid
         for row in range(len(game_grid)):
             for col in range(len(game_grid[row])):
                 if game_grid[row][col] == "C":
@@ -68,10 +69,6 @@ class Game(arcade.Window):
     def setup(self):
         """Set up the game."""
 
-        
-        
-
-    
     def on_draw(self):
         """Render the screen"""
         # Clear screen
@@ -80,16 +77,13 @@ class Game(arcade.Window):
         self.draw_info()
         self.draw_grid()
 
+        # paint obj
         for chicken in self.chickens:
             chicken.draw()
-
         for fox in self.foxes:
             fox.draw()
-
-        # for plant in self.plants:
-        #     plant.draw()
-
-
+        for plant in self.plants:
+            plant.draw()
 
     # Draw wall grid
     def draw_grid(self):
@@ -108,10 +102,11 @@ class Game(arcade.Window):
         #     arcade.draw_rectangle_outline(x, y, CELL_SIZE, CELL_SIZE, arcade.color.RED, 5)
 
                 
-    def on_mouse_click(self, x, y, button, modifiers):
+    def on_mouse_press(self, x, y, button, modifiers):
         """Click mouse"""
         col = x // CELL_SIZE
         row = y // CELL_SIZE
+
 
         # Mouse click on chiken ??
         for chicken in self.chickens:
@@ -185,6 +180,9 @@ class Game(arcade.Window):
     #                 self.selected_chicken = (row - 1, col)
 
     #         self.on_draw()
+    def update(self, delta_time):
+        """ Update sprite """
+        pass
 
         
     def draw_info(self):
@@ -205,11 +203,20 @@ class Game(arcade.Window):
         arcade.draw_text("Информация о игре", panel_x - 160, SCREEN_HEIGHT - 50, arcade.color.BLACK, 20)
 
         # Ход игры
-        arcade.draw_text(f"Ход: {'Кур' if self.turn == 'chicken' else 'Лис'}", panel_x - 160, SCREEN_HEIGHT - 100, arcade.color.BLACK, 18)
+        #arcade.draw_text(f"Ход: {'Кур' if self.turn == 'chicken' else 'Лис'}", panel_x - 160, SCREEN_HEIGHT - 100, arcade.color.BLACK, 18)
+
+
+        if self.selected_chicken:
+            # Выбрана курица 
+            x, y = self.selected_chicken.grid_position
+            arcade.draw_text(f"X: {x} Y: {y}", panel_x - 160, SCREEN_HEIGHT - 100, arcade.color.BLACK, 18)
+        else:
+            arcade.draw_text(f"No select", panel_x - 160, SCREEN_HEIGHT - 100, arcade.color.BLACK, 18)
+
 
         # Количество кур и лис
-        #arcade.draw_text(f"Кур на поле: {total_chickens}", panel_x - 160, SCREEN_HEIGHT - 150, arcade.color.BLACK, 18)
-        #arcade.draw_text(f"Лис на поле: {total_foxes}", panel_x - 160, SCREEN_HEIGHT - 200, arcade.color.BLACK, 18)
+        arcade.draw_text(f"Кур на поле: {len(self.chickens)}", panel_x - 160, SCREEN_HEIGHT - 150, arcade.color.BLACK, 18)
+        arcade.draw_text(f"Лис на поле: {len(self.foxes)}", panel_x - 160, SCREEN_HEIGHT - 200, arcade.color.BLACK, 18)
 
         # Отображаем, чья очередь
         arcade.draw_text(f"Текущий ход: {'Курицы' if self.turn == 'chicken' else 'Лисы'}", panel_x - 160, SCREEN_HEIGHT - 250, arcade.color.BLACK, 18)

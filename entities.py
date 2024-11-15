@@ -11,14 +11,13 @@ class Object_Cell(arcade.Sprite):
         self.center_y = y
 
         # position in grid
-        self.grid_position = (x, y)
+        self.grid_position = (x // CELL_SIZE, y // CELL_SIZE) 
 
         # size for drow
-        target_width = CELL_SIZE
-        target_height = CELL_SIZE
-        scale_x = target_width / self.width
-        scale_y = target_height / self.height
+        scale_x = CELL_SIZE / self.width
+        scale_y = CELL_SIZE / self.height
         self.scale = min(scale_x, scale_y)
+
         
 
 class Chicken(Object_Cell):
@@ -36,6 +35,15 @@ class Chicken(Object_Cell):
 
     def on_click(self):
         self.selected = not self.selected
+
+    def draw(self):
+        super().draw()
+
+        # Draw a border around the chicken if it's selected
+        if self.selected:
+            arcade.draw_rectangle_outline(self.center_x, self.center_y, CELL_SIZE, CELL_SIZE, arcade.color.RED, 5)
+
+    
 
 class Fox(Object_Cell):
     def __init__(self, x, y, texture_path):
