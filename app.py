@@ -27,6 +27,10 @@ class Game(arcade.Window):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, "Chickens VS Fox")
         arcade.set_background_color(arcade.csscolor.WHITE)
 
+        # size sprite 
+        self.target_width = 90
+        self.target_height = 90
+
         # load assets
         self.chicken_texture_path = os.path.join(ASSETS_PATH, "chickens/chicken_.png")
         self.fox_texture_path = os.path.join(ASSETS_PATH, "foxes/fox_.png")
@@ -39,7 +43,7 @@ class Game(arcade.Window):
         self.plants = []
 
         # init selected chicken
-        self.selected_chiken = None
+        self.selected_chicken = None
 
         # create obj
         self._create_obj(game_grid)
@@ -53,9 +57,9 @@ class Game(arcade.Window):
                 if game_grid[row][col] == "C":
                     chicken = Chicken(col * CELL_SIZE + CELL_SIZE / 2, row * CELL_SIZE + CELL_SIZE / 2, self.chicken_texture_path)
                     self.chickens.append(chicken)
-                # elif game_grid[row][col] == "F":
-                #     fox = Fox(col * CELL_SIZE + CELL_SIZE / 2, rol * CELL_SIZE + CELL_SIZE / 2, self.fox_texture_path)
-                #     self.foxes.append(fox)
+                elif game_grid[row][col] == "F":
+                    fox = Fox(col * CELL_SIZE + CELL_SIZE / 2, row * CELL_SIZE + CELL_SIZE / 2, self.fox_texture_path)
+                    self.foxes.append(fox)
                 elif game_grid[row][col] == "0":
                     plant = Plant(col * CELL_SIZE + CELL_SIZE / 2, row * CELL_SIZE + CELL_SIZE / 2, self.plant_texture_path)
                     self.plants.append(plant)
@@ -72,7 +76,7 @@ class Game(arcade.Window):
         """Render the screen"""
         # Clear screen
         arcade.start_render()
-        
+
         self.draw_info()
         self.draw_grid()
 
@@ -112,16 +116,45 @@ class Game(arcade.Window):
         # Mouse click on chiken ??
         for chicken in self.chickens:
             if chicken.grid_position == (col, row):
+                 # Toggle selection of the chicken
                 if self.selected_chicken == chicken:
-                    self.selected_chiсken.on_click()
-                    self.selected_chiсken = None
+                    chicken.on_click()  # Deselect the chicken
+                    self.selected_chicken = None
                 else:
-                    self.selected_chiсken.on_click()
-                    chicken.on_click()
-                    self.selected_chiсken = chicken
+                    if self.selected_chicken:
+                        self.selected_chicken.on_click()  # Deselect previously selected chicken
+                    chicken.on_click()  # Select the new chicken
+                    self.selected_chicken = chicken
                 
-                
-                
+    
+    def on_key_press(self, symbol, modifiers):
+        """Handle key presses for moving the selected chicken"""
+        if self.selected_chicken:
+            row, col = self.selected_chicken.grid_position
+            if symbol == arcade.key.RIGHT:
+                # Move the chicken right if the space is empty
+                if col + 1 < GRID_SIZE:
+                    self.selected_chicken.move(col + 1, row)
+            elif symbol == arcade.key.LEFT:
+                if col - 1 >= 0:
+                    self.selected_chicken.move(col - 1, row)
+            elif symbol == arcade.key.UP:
+                if row + 1 < GRID_SIZE:
+                    self.selected_chicken.move(col, row + 1)
+            elif symbol == arcade.key.DOWN:
+                if row - 1 >= 0:
+                    self.selected_chicken.move(col, row - 1)
+
+            self.on_draw()  # Re-render the screen after moving the chicken
+
+    
+    def switch_turn(self):
+        """Switch between chicken and fox turns"""
+        if self.turn == "chicken":
+            self.turn = "fox"
+        else:
+            self.turn = "chicken"
+
 
 
     # def on_key_press(self, symbol, modifiers):
@@ -187,7 +220,6 @@ class Game(arcade.Window):
 
 def main():
     window = Game()
-    window.setup()
     arcade.run()
 
 if __name__ == "__main__":
