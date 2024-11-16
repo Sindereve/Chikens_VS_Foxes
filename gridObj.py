@@ -1,7 +1,22 @@
 import arcade
+from config import load_config
 
-# size one cell
-CELL_SIZE = 100
+config = load_config()
+# SCREEN
+SCREEN_WIDTH = int(config["general"]["screen_width"])
+SCREEN_HEIGHT =  int(config["general"]["screen_height"])
+
+# Grid set
+GRID_SIZE = int(config["grid"]["grid_size"])
+CELL_SIZE = int(config["grid"]["cell_size"])
+
+# edge
+LEFT_EDGE_GRID = int(config["grid"]["left_edge"])
+RIGHT_EDGE_GRID = GRID_SIZE * CELL_SIZE + LEFT_EDGE_GRID
+
+# edge
+DOWN__EDGE_GRID = int(config["grid"]["down_edge"])
+UP_EDGE_GRID = GRID_SIZE * CELL_SIZE + DOWN__EDGE_GRID
 
 
 class Object_Cell(arcade.Sprite):
@@ -11,12 +26,24 @@ class Object_Cell(arcade.Sprite):
         self.center_y = y
 
         # position in grid
-        self.grid_position = (int(x // CELL_SIZE), int(y // CELL_SIZE)) 
+        self._grid_position = (int(x // CELL_SIZE - (LEFT_EDGE_GRID // CELL_SIZE)), int(y // CELL_SIZE)) 
 
         # size for drow
         scale_x = CELL_SIZE / self.width
         scale_y = CELL_SIZE / self.height
         self.scale = min(scale_x, scale_y)
+
+    def move(self, new_x, new_y):
+        self.center_x = new_x*CELL_SIZE+CELL_SIZE/2 + LEFT_EDGE_GRID
+        self.center_y = new_y*CELL_SIZE+CELL_SIZE/2
+        self._grid_position = (new_x, new_y)
+
+    @property
+    def grid_position(self):
+        x, y = self._grid_position
+        x =  x + LEFT_EDGE_GRID//CELL_SIZE - LEFT_EDGE_GRID//CELL_SIZE
+        return x, y
+
 
         
 
@@ -26,16 +53,6 @@ class Chicken(Object_Cell):
         # Selected chicken
         self.selected = False
         
-    
-    def move(self, new_x, new_y):
-        print('\n-----------Job move func-----------')
-        self.center_x = new_x*CELL_SIZE+CELL_SIZE/2
-        self.center_y = new_y*CELL_SIZE+CELL_SIZE/2
-        print('Centet x/y', self.center_x, self.center_y)
-        self.grid_position = (new_x, new_y)
-        print('New x/y', new_x, new_y)
-        print('\n-----------Job move func-----------')
-
     def on_click(self):
         self.selected = not self.selected
 
@@ -52,10 +69,7 @@ class Fox(Object_Cell):
     def __init__(self, x, y, texture_path):
         super().__init__(x, y, texture_path)
 
-    def move(self, new_x, new_y):
-        self.center_x = new_x * CELL_SIZE + CELL_SIZE / 2
-        self.center_y = new_y * CELL_SIZE + CELL_SIZE / 2
-        self.grid_position = (new_x, new_y)
+
 
 class Plant(Object_Cell):
     def __init__(self, x, y, texture_path):
