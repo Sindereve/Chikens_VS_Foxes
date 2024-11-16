@@ -1,6 +1,5 @@
 import arcade
-
-from config import load_config
+from tools import load_config
 from gridObj import Chicken, Fox, Plant
 import os
 
@@ -66,7 +65,6 @@ class GameGrid:
         #       isFree - bool
         self._possible_cell_step = None
 
-
     def _create_obj(self, game_grid):
         # create obj in game grid
         for row in range(len(game_grid)):
@@ -79,12 +77,10 @@ class GameGrid:
                     self._foxes.append(fox)
                 elif game_grid[row][col] == "0":
                     plant = Plant(col * CELL_SIZE + CELL_SIZE / 2 + LEFT_EDGE_GRID, row * CELL_SIZE + CELL_SIZE / 2, self.plant_texture_path)
-                    self._plants.append(plant)
-
-        
+                    self._plants.append(plant)    
 
     def draw(self):
-        """Отрисовывает поле и все объекты"""
+        """ Grid draw =) """
         self.draw_grid()
 
         # paint obj
@@ -115,16 +111,11 @@ class GameGrid:
                 y = row * CELL_SIZE + CELL_SIZE/2
                 arcade.draw_rectangle_outline(x, y, CELL_SIZE, CELL_SIZE, arcade.color.BLACK)
 
-    def on_mouse_press(self, x, y, button, modifiers):
+    def on_mouse_press(self, x, y):
         """Click mouse"""
         col = x // CELL_SIZE - LEFT_EDGE_GRID // CELL_SIZE
         row = y // CELL_SIZE
 
-        print('==========================================')
-        print('==========================================')
-        print('==========================================')
-        print('==========================================')
-        
         # Mouse click on chiken ??
         for chicken in self._chickens:
             if chicken.grid_position == (col, row):
@@ -164,8 +155,6 @@ class GameGrid:
                 if (y_grid_new := y_grid-1) > -1:
                     self._move_obj(self._selected_chicken, x_grid, y_grid_new)
 
-
-
     def _move_obj(self, obj, x_grid_new, y_grid_new):
         if isinstance(obj, Fox):
             obj.move(x_grid_new, y_grid_new)
@@ -192,7 +181,6 @@ class GameGrid:
             possible_cells.append((obj_x-1,obj_y))
 
         self._possible_cell_step = self._is_occupied_cell(possible_cells)
-
 
     def _is_occupied_cell(self, possible_cells):
         """
@@ -222,5 +210,3 @@ class GameGrid:
         else:
             self.turn = "chicken"
         
-
-       

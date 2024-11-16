@@ -1,5 +1,5 @@
 import arcade
-from config import load_config
+from tools import load_config
 
 config = load_config()
 # SCREEN
