@@ -100,8 +100,7 @@ class Game(arcade.Window):
         #     x = col * CELL_SIZE + CELL_SIZE / 2
         #     y = row * CELL_SIZE + CELL_SIZE / 2
         #     arcade.draw_rectangle_outline(x, y, CELL_SIZE, CELL_SIZE, arcade.color.RED, 5)
-
-                
+           
     def on_mouse_press(self, x, y, button, modifiers):
         """Click mouse"""
         col = x // CELL_SIZE
@@ -125,20 +124,20 @@ class Game(arcade.Window):
     def on_key_press(self, symbol, modifiers):
         """Handle key presses for moving the selected chicken"""
         if self.selected_chicken:
-            row, col = self.selected_chicken.grid_position
+            x_grid, y_grid = self.selected_chicken.grid_position
+
             if symbol == arcade.key.RIGHT:
-                # Move the chicken right if the space is empty
-                if col + 1 < GRID_SIZE:
-                    self.selected_chicken.move(col + 1, row)
+                if (x_grid_new := x_grid+1) < GRID_SIZE:
+                    self.selected_chicken.move(x_grid_new, y_grid)
             elif symbol == arcade.key.LEFT:
-                if col - 1 >= 0:
-                    self.selected_chicken.move(col - 1, row)
+                if (x_grid_new := x_grid-1) > -1:
+                    self.selected_chicken.move(x_grid_new, y_grid)
             elif symbol == arcade.key.UP:
-                if row + 1 < GRID_SIZE:
-                    self.selected_chicken.move(col, row + 1)
+                if (y_grid_new := y_grid+1) < GRID_SIZE:
+                    self.selected_chicken.move(x_grid, y_grid_new)
             elif symbol == arcade.key.DOWN:
-                if row - 1 >= 0:
-                    self.selected_chicken.move(col, row - 1)
+                if (y_grid_new := y_grid-1) > -1:
+                    self.selected_chicken.move(x_grid, y_grid_new)
 
             self.on_draw()  # Re-render the screen after moving the chicken
 

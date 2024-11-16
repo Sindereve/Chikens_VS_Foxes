@@ -11,7 +11,7 @@ class Object_Cell(arcade.Sprite):
         self.center_y = y
 
         # position in grid
-        self.grid_position = (x // CELL_SIZE, y // CELL_SIZE) 
+        self.grid_position = (int(x // CELL_SIZE), int(y // CELL_SIZE)) 
 
         # size for drow
         scale_x = CELL_SIZE / self.width
@@ -28,10 +28,13 @@ class Chicken(Object_Cell):
         
     
     def move(self, new_x, new_y):
+        print('\n-----------Job move func-----------')
         self.center_x = new_x*CELL_SIZE+CELL_SIZE/2
         self.center_y = new_y*CELL_SIZE+CELL_SIZE/2
-
+        print('Centet x/y', self.center_x, self.center_y)
         self.grid_position = (new_x, new_y)
+        print('New x/y', new_x, new_y)
+        print('\n-----------Job move func-----------')
 
     def on_click(self):
         self.selected = not self.selected
