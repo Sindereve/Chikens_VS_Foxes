@@ -46,8 +46,11 @@ class Button:
         current_texture = self._hover_texture if self.check_hover else self._normal_texture
         
         arcade.draw_texture_rectangle(self.x, self.y, self.width, self.height, current_texture)
-        #arcade.draw_rectangle_filled(self.x, self.y, self.width, self.height, color)
-        arcade.draw_text(self.text, self.x - self.width / 2 + 10, self.y - self.height / 4, text_color, 18)
+        
+        # outline
+        arcade.draw_rectangle_outline(self.x, self.y, self.width, self.height, arcade.color.RED, 5)
+
+        #arcade.draw_text(self.text, self.x - self.width/2, self.y - self.height/2, text_color, 20, width=self.width, align = "center")
 
     def check_click(self, x, y):
         """ is click ??? """

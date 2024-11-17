@@ -27,22 +27,37 @@ class Menu_View(arcade.View):
     def _create_buttons(self):
         buttons = []
 
-        button_height = 60
-        button_width = 200 
+        button_height = 200
+        button_width = 300 
         button_indention = 100
 
-        # Start Game
-        buttons.append(Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 
-                              button_width, button_height, 'Start Game', self._start_game))
-        # Info Game
-        buttons.append(Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - button_indention * len(buttons), 
-                              button_width, button_height, 'Info', None))
-        # Leader boart
-        buttons.append(Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - button_indention * len(buttons), 
-                              button_width, button_height, 'Leader Boart', None))
         # Exit app
-        buttons.append(Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - button_indention * len(buttons), 
-                              button_width, button_height, 'Exit', self._quit_game))
+        buttons.append(Button(SCREEN_WIDTH // 2, button_indention * len(buttons), 
+                              button_width, button_height, 'Exit',
+                              'assets/menuView/button/down_button/folder-1.png', 
+                              'assets/menuView/button/down_button/folder-1.png', 
+                               self._quit_game))
+
+        # Info Game
+        buttons.append(Button(SCREEN_WIDTH // 2, button_indention * len(buttons),
+                              button_width, button_height, 'Info', 
+                              'assets/menuView/button/center_button/folder-1.png', 
+                              'assets/menuView/button/center_button/folder-1.png', 
+                              None))
+        
+        # Leader boart
+        buttons.append(Button(SCREEN_WIDTH // 2, button_indention * len(buttons),
+                              button_width, button_height, 'Leader Boart',
+                              'assets/menuView/button/center_button/folder-1.png', 
+                              'assets/menuView/button/center_button/folder-1.png', 
+                              None))
+        
+
+        # Start Game
+        buttons.append(Button(SCREEN_WIDTH // 2, button_indention * len(buttons) + 100,
+                              button_width, button_height, 'Start Game',
+                              "assets/menuView/button/UP_button/folder-1.png",
+                              "assets/menuView/button/UP_button/folder-1.png", self._start_game))
 
         return buttons
     
