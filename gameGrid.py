@@ -33,6 +33,7 @@ class GameGrid:
             ["0", "0", "C", "C", "C", "0", "0"],
             ["0", "0", "C", "C", "C", "0", "0"]
         ]):
+    
         
         # size sprite 
         self.target_width = 90

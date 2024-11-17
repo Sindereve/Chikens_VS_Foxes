@@ -16,12 +16,12 @@ button_color = (int(config["color scheme"]["button_color_r"]),
                 int(config["color scheme"]["button_color_g"]),
                 int(config["color scheme"]["button_color_b"]))
 
-class Menu(arcade.View):
+class Menu_View(arcade.View):
     """ Main menu """
 
     def __init__(self):
         super().__init__()
-        self.bg = AnimatedBackground("assets\\background\menu", SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+        self.bg = AnimatedBackground("assets\\menuView\\background", SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, SCREEN_WIDTH, SCREEN_HEIGHT)
         self._buttons = self._create_buttons()
 
     def _create_buttons(self):

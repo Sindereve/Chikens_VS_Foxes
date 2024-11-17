@@ -23,7 +23,7 @@ button_color = (int(config["color scheme"]["button_color_r"]),
                 int(config["color scheme"]["button_color_b"]))
 
 class Button:
-    def __init__(self, x, y, width, height, text, action=None):
+    def __init__(self, x, y, width, height, text, image_base, image_hover, action=None):
         """
         Init button 
         :param action: Func for button
@@ -35,12 +35,18 @@ class Button:
         self.height = height
         self.text = text
         self.action = action
+        self._normal_texture = arcade.load_texture(image_base)
+        self._hover_texture = arcade.load_texture(image_hover)
         self.is_hovered = False
 
     def on_draw(self):
         """ Draw """
-        color = button_color if self.is_hovered else (92, 219, 20)
-        arcade.draw_rectangle_filled(self.x, self.y, self.width, self.height, color)
+        #color = button_color if self.is_hovered else (92, 219, 20)
+
+        current_texture = self._hover_texture if self.check_hover else self._normal_texture
+        
+        arcade.draw_texture_rectangle(self.x, self.y, self.width, self.height, current_texture)
+        #arcade.draw_rectangle_filled(self.x, self.y, self.width, self.height, color)
         arcade.draw_text(self.text, self.x - self.width / 2 + 10, self.y - self.height / 4, text_color, 18)
 
     def check_click(self, x, y):
@@ -58,7 +64,7 @@ class Button:
 
 
 class AnimatedBackground(arcade.Sprite):
-    def __init__(self, image_folder, x, y, scale=1):
+    def __init__(self, image_folder, x, y, window_width, window_height, scale=1):
         super().__init__()
         
         # list frames
@@ -69,6 +75,9 @@ class AnimatedBackground(arcade.Sprite):
         self.load_frames(image_folder)  
         self.set_position(x, y)
         self.scale = scale  
+        # size window
+        self.window_width = window_width 
+        self.window_height = window_height
 
     def load_frames(self, folder):
         """ loading full frame """
@@ -76,6 +85,7 @@ class AnimatedBackground(arcade.Sprite):
             if filename.endswith('.png'):
                 filepath = os.path.join(folder, filename)
                 self.frames.append(arcade.load_texture(filepath))
+
 
     def update(self):
         """ update sprite image"""
@@ -86,4 +96,10 @@ class AnimatedBackground(arcade.Sprite):
 
     def draw(self):
         """ DRAW """
-        super().draw()
+        width = self.window_width * self.scale
+        height = self.window_height * self.scale
+
+        arcade.draw_texture_rectangle(
+            self.window_width // 2,
+            self.window_height // 2,
+            width, height, self.texture)

@@ -1,6 +1,6 @@
 import arcade
 from tools import load_config
-from menuView import Menu
+from menuView import Menu_View
 
 config = load_config()
 # SCREEN
@@ -16,7 +16,7 @@ class Game(arcade.Window):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, "Chickens VS Fox")
         arcade.set_background_color(arcade.csscolor.WHITE)
 
-        self._menu_view = Menu()
+        self._menu_view = Menu_View()
         self.show_view(self._menu_view)
 
 
