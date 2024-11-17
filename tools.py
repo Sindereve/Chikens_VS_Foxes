@@ -22,35 +22,36 @@ button_color = (int(config["color scheme"]["button_color_r"]),
                 int(config["color scheme"]["button_color_g"]),
                 int(config["color scheme"]["button_color_b"]))
 
+font_path = "assets/fonts/assets/fonts/Pixels.ttf"
+
 class Button:
-    def __init__(self, x, y, width, height, text, image_base, image_hover, action=None):
+    def __init__(self,x, y, width, height, text, image_base, image_hover, action=None):
         """
         Init button 
         :param action: Func for button
         """
-        
         self.x = x
         self.y = y
         self.width = width
         self.height = height
-        self.text = text
+        self._text = text
         self.action = action
         self._normal_texture = arcade.load_texture(image_base)
         self._hover_texture = arcade.load_texture(image_hover)
         self.is_hovered = False
 
-    def on_draw(self):
+    def draw(self):
         """ Draw """
-        #color = button_color if self.is_hovered else (92, 219, 20)
+        current_texture = self._hover_texture if self.is_hovered else self._normal_texture
 
-        current_texture = self._hover_texture if self.check_hover else self._normal_texture
-        
         arcade.draw_texture_rectangle(self.x, self.y, self.width, self.height, current_texture)
-        
-        # outline
-        arcade.draw_rectangle_outline(self.x, self.y, self.width, self.height, arcade.color.RED, 5)
+        arcade.draw_text(self._text,
+                    self.x, self.y,
+                    arcade.color.WHITE, 30, font_name="fibberish", 
+                    anchor_x='center', anchor_y='center')
 
-        #arcade.draw_text(self.text, self.x - self.width/2, self.y - self.height/2, text_color, 20, width=self.width, align = "center")
+        # outline
+        #arcade.draw_rectangle_outline(self.x, self.y, self.width, self.height, arcade.color.RED, 5)
 
     def check_click(self, x, y):
         """ is click ??? """
@@ -63,10 +64,132 @@ class Button:
         """ this is magick for mouse :)))))"""
         self.is_hovered = (self.x - self.width / 2 <= x <= self.x + self.width / 2 and
                            self.y - self.height / 2 <= y <= self.y + self.height / 2)
+        self.draw()
+
+class InfoBoard:
+    def __init__(self, x, y, width, height, number_chickens, number_foxes, number_step, who_step):
+        self._x = x
+        self._y = y
+        self._width = width
+        self._height = height
+
+        self._number_chickens = number_chickens
+        self._number_foxes = number_foxes
+        self._who_step = who_step
+        self._number_step = number_step
+
+
+    def update_info(self, number_chickens, number_foxes, number_step, who_step):
+        self._number_chickens = number_chickens
+        self._who_step = who_step
+        self._number_foxes = number_foxes
+        self._number_step = number_step
+        self.draw()
+
+    def draw(self):
+        # arcade.draw_texture_rectangle(self._x, self._y, self._width, self._height, self._texture)
+        arcade.draw_rectangle_filled(self._x, self._y, self._width, self._height, (211, 211, 211, 200))
+
+        arcade.draw_text('Information',
+                    self._x, int(self._y + self._height//2 - 20),
+                    arcade.color.BLACK, 30, font_name="fibberish", 
+                    anchor_x='center', anchor_y='center')
+
+        left_edge_text = int(self._x - self._width // 2)
+        up_edge_text = int(self._y + self._height//2 - 70)
+
+        arcade.draw_text(f' Step ',
+                    left_edge_text , up_edge_text,
+                    arcade.color.BLACK, 25, font_name="fibberish")
+        up_edge_text-=20
+        arcade.draw_text(f'  {self._who_step}',
+                    left_edge_text , up_edge_text,
+                    arcade.color.BLACK, 25, font_name="fibberish")
+        up_edge_text-=20
+        arcade.draw_text(f' Number - {self._number_step}',
+                    left_edge_text , up_edge_text,
+                    arcade.color.BLACK, 25, font_name="fibberish")
+        up_edge_text-=50
+
+        arcade.draw_text(f' Count Chicken:',
+                    left_edge_text , up_edge_text,
+                    arcade.color.BLACK, 20, font_name="fibberish")
+        up_edge_text-=20
+        arcade.draw_text(f' X {self._number_chickens}',
+                    left_edge_text , up_edge_text,
+                    arcade.color.BLACK, 25, font_name="fibberish")
+        up_edge_text-=50
+
+        
+        arcade.draw_text(f' Count Foxes:',
+                    left_edge_text , up_edge_text,
+                    arcade.color.BLACK, 20, font_name="fibberish")
+        up_edge_text-=20
+        arcade.draw_text(f' X {self._number_foxes}',
+                    left_edge_text , up_edge_text,
+                    arcade.color.BLACK, 25, font_name="fibberish")
+        up_edge_text-=50
+
+        # outline
+        arcade.draw_rectangle_outline(self._x, self._y, self._width, self._height, arcade.color.BLACK, 3)
+        
+        #draw_rectangle_with_top_left_corner_rounded(self._x, self._y, self._width, self._height, (211, 211, 211, 200), 20)
+
+class ButtonBoard:
+    def __init__(self, x, y, width, height):
+        self._x = x
+        self._y = y
+        self._width = width
+        self._height = height
+        self._buttons = self._create_button()
+
+    def _create_button(self):
+        buttons = []
+
+        step_in_down = 80
+        y_center = int(self._y + self._height*0.3)
+        button_width = self._width - 20
+        button_height = 70
         
 
+        buttons.append(Button(self._x, y_center, 
+                              button_width, button_height, 'Exit',
+                              'assets/menuView/button/exit_button/folder-2.png', 
+                              'assets/menuView/button/exit_button/folder-4.png', 
+                               ))
+
+        buttons.append(Button(self._x, y_center - step_in_down*len(buttons), 
+                              button_width, button_height, 'Exit',
+                              'assets/menuView/button/exit_button/folder-2.png', 
+                              'assets/menuView/button/exit_button/folder-4.png', 
+                               ))
+
+        buttons.append(Button(self._x, y_center - step_in_down*len(buttons), 
+                              button_width, button_height, 'Exit',
+                              'assets/menuView/button/exit_button/folder-2.png', 
+                              'assets/menuView/button/exit_button/folder-4.png', 
+                               ))
+
+        return buttons
+
+    def draw(self):
+        """ Draw """
+
+        # arcade.draw_texture_rectangle(self._x, self._y, self._width, self._height, self._texture)
+        arcade.draw_rectangle_filled(self._x, self._y, self._width, self._height, (211, 211, 211, 200))
+
+        arcade.draw_text('Menu',
+                    self._x, int(self._y + self._height//2 - 20),
+                    arcade.color.BLACK, 30, font_name="fibberish", 
+                    anchor_x='center', anchor_y='center')
+
+        for button in self._buttons:
+            button.draw()
+
+        arcade.draw_rectangle_outline(self._x, self._y, self._width, self._height, arcade.color.BLACK, 3)
 
 class AnimatedBackground(arcade.Sprite):
+
     def __init__(self, image_folder, x, y, window_width, window_height, scale=1):
         super().__init__()
         
@@ -88,6 +211,7 @@ class AnimatedBackground(arcade.Sprite):
             if filename.endswith('.png'):
                 filepath = os.path.join(folder, filename)
                 self.frames.append(arcade.load_texture(filepath))
+        self.texture = self.frames[self.frame_index]
 
 
     def update(self):
@@ -106,3 +230,37 @@ class AnimatedBackground(arcade.Sprite):
             self.window_width // 2,
             self.window_height // 2,
             width, height, self.texture)
+
+class BlinkingText:
+    def __init__(self, text, x, y, font_size):
+        
+        self._x = x
+        self._y = y
+        self._text = text
+        self._font_size = font_size
+
+        # alpha - animation effect
+        self._alpha = 255
+        self._alpha_direction = -1
+
+    def draw(self):
+        #arcade.draw_rectangle_filled(self._x, self._y, 300, 50, arcade.color.BLACK, alpha=150)
+
+        arcade.draw_text(self._text, self._x + 3, self._y - 3, 
+                    arcade.color.BLACK, self._font_size, font_name="fibberish", 
+                    anchor_x='center', anchor_y='center')
+
+        
+        arcade.draw_text(self._text, self._x, self._y, (255, 0, 0, self._alpha), 
+                    self._font_size, font_name="fibberish", 
+                    anchor_x='center', anchor_y='center')
+                    #border_width=3, border_color=arcade.color.WHITE)
+
+    def update(self, delta_time):
+        self._alpha += self._alpha_direction
+        if self._alpha <= 0:
+            self._alpha_direction *= -1
+            self._alpha = 0 
+        elif self._alpha >= 255:
+            self._alpha_direction *= -1
+            self._alpha = 255

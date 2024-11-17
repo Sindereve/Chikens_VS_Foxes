@@ -1,5 +1,6 @@
 import arcade
 from tools import load_config
+from random import randint
 from gridObj import Chicken, Fox, Plant
 import os
 
@@ -168,22 +169,63 @@ class GameGrid:
             obj.move(x_grid_new, y_grid_new)
             self._possible_cell_step = None
             self._search_possible_step_for_obj_in_gameGrid(obj)
+            self._step_fox()
+
+    def _step_fox(self):
+        indx_fox = randint(0,1)
+        self._search_possible_step_for_obj_in_gameGrid(self._foxes[indx_fox])
+
+
 
     def _search_possible_step_for_obj_in_gameGrid(self, obj_gameGrid):
-        obj_x, obj_y = obj_gameGrid.grid_position
-        possible_cells = list()
-        if obj_y+1 < GRID_SIZE:
+        if isinstance(obj_gameGrid, Fox):
+            obj_x, obj_y = obj_gameGrid.grid_position
+            possible_cells = list()
+            
+            possible_cells.append((obj_x,obj_y+2))
             possible_cells.append((obj_x,obj_y+1))
-        if obj_y-1 > -1:
+            
+            possible_cells.append((obj_x,obj_y-2))
             possible_cells.append((obj_x,obj_y-1))
-        if obj_x+1 < GRID_SIZE:
+            
+            possible_cells.append((obj_x+2,obj_y))
             possible_cells.append((obj_x+1,obj_y))
-        if obj_x-1 > -1:
+            
+            possible_cells.append((obj_x-2,obj_y))
             possible_cells.append((obj_x-1,obj_y))
+            
 
-        self._possible_cell_step = self._is_occupied_cell(possible_cells)
+            x_fact, y_fact = obj_gameGrid.grid_position
+            is_occupied_cell = self._is_occupied_cell(possible_cells, obj_gameGrid)
+            new_list_is_occupied_cell = []
+            for indx in range(0, len(is_occupied_cell), 2):
+                
+                if is_occupied_cell[indx+1][1]:
+                    new_list_is_occupied_cell.append(is_occupied_cell[indx+1])
+                else:
+                    if is_occupied_cell[indx][1]:
+                        new_list_is_occupied_cell.append(is_occupied_cell[indx])
+                
+            self._possible_cell_step = new_list_is_occupied_cell
+                
 
-    def _is_occupied_cell(self, possible_cells):
+        elif isinstance(obj_gameGrid, Chicken):
+
+            obj_x, obj_y = obj_gameGrid.grid_position
+            possible_cells = list()
+            if obj_y+1 < GRID_SIZE:
+                possible_cells.append((obj_x,obj_y+1))
+            if obj_y-1 > -1:
+                possible_cells.append((obj_x,obj_y-1))
+            if obj_x+1 < GRID_SIZE:
+                possible_cells.append((obj_x+1,obj_y))
+            if obj_x-1 > -1:
+                possible_cells.append((obj_x-1,obj_y))
+
+            self._possible_cell_step = self._is_occupied_cell(possible_cells, obj_gameGrid)
+
+
+    def _is_occupied_cell(self, possible_cells, obj):
         """
             return:
                 - info_cell_TF - list
@@ -192,15 +234,28 @@ class GameGrid:
                             - occupied = bool
         """
 
-        info_cell_TF = list()
+        if isinstance(obj, Fox):
+            info_cell_TF = list()
 
-        for possible_cell in possible_cells:
-            info_cell_TF.append([possible_cell, True])
+            for possible_cell in possible_cells:
+                info_cell_TF.append([possible_cell, True])
 
-        for obj in self._full_obj_in_grid:
-            for cell_indx in range(len(info_cell_TF)):
-                if obj.grid_position == info_cell_TF[cell_indx][0]:
-                    info_cell_TF[cell_indx][1] = False
+            for obj in self._full_obj_in_grid:
+                for cell_indx in range(len(info_cell_TF)):
+                    if obj.grid_position == info_cell_TF[cell_indx][0]:
+                        info_cell_TF[cell_indx][1] = False
+                                    
+        elif isinstance(obj, Chicken):
+
+            info_cell_TF = list()
+
+            for possible_cell in possible_cells:
+                info_cell_TF.append([possible_cell, True])
+
+            for obj in self._full_obj_in_grid:
+                for cell_indx in range(len(info_cell_TF)):
+                    if obj.grid_position == info_cell_TF[cell_indx][0]:
+                        info_cell_TF[cell_indx][1] = False
 
         return info_cell_TF
 

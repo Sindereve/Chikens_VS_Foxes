@@ -1,5 +1,5 @@
 import arcade
-from tools import config,AnimatedBackground
+from tools import config, AnimatedBackground, InfoBoard, ButtonBoard
 from gameGrid import GameGrid
 
 # SCREEN
@@ -22,15 +22,41 @@ class GameView(arcade.View):
 
     def __init__(self, last_view):
         super().__init__()
+         
         self.__last_view = last_view
-        self.bg = AnimatedBackground("assets\gameView\\background", SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.bg = AnimatedBackground("assets/gameView/background", 
+                                        SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 
+                                        SCREEN_WIDTH, SCREEN_HEIGHT)
+        self._info_board = InfoBoard(SCREEN_WIDTH - 150, int(SCREEN_HEIGHT//2 - SCREEN_HEIGHT*0.1), 
+                                        200, int(SCREEN_HEIGHT - SCREEN_HEIGHT*0.2), 20, 2, 0, 'Chickens')
+
+        self._button_board = ButtonBoard(150, int(SCREEN_HEIGHT//2 - SCREEN_HEIGHT*0.1), 
+                                        200, int(SCREEN_HEIGHT - SCREEN_HEIGHT*0.2))
+
+        print(SCREEN_WIDTH // 2, int(SCREEN_HEIGHT - SCREEN_HEIGHT * 0.05))
         self.game_grid = GameGrid()
 
     def on_draw(self):
-        """Отображаем экран игры"""
         arcade.start_render()
         self.bg.draw()
+        self._info_board.draw()
+        self._button_board.draw()
+        self._draw_title()
         self.game_grid.draw()
+
+    def _draw_title(self):
+        text = "Chickens VS Foxes" 
+        x = SCREEN_WIDTH // 2
+        y = SCREEN_HEIGHT - SCREEN_HEIGHT * 0.1
+        font_size = 100
+
+        arcade.draw_text(text, x + 3, y - 3, 
+                    arcade.color.BLACK, font_size , font_name="fibberish", 
+                    anchor_x='center', anchor_y='center')
+
+        arcade.draw_text(text , x, y, (255, 0, 0), 
+                    font_size, font_name="fibberish", 
+                    anchor_x='center', anchor_y='center')
 
     def on_mouse_press(self, x, y, button, modifiers):
         """Обработка кликов мыши в игре"""
