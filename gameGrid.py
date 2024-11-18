@@ -132,7 +132,7 @@ class GameGrid:
                         self._selected_chicken.on_click()  # Deselect previously selected chicken
                     chicken.on_click()  # Select the new chicken
                     self._selected_chicken = chicken
-                    self._search_possible_step_for_obj_in_gameGrid(self._selected_chicken)
+                    self._possible_cell_step = self._search_possible_step_for_obj_in_gameGrid(self._selected_chicken)
 
     @property 
     def _full_obj_in_grid(self):
@@ -162,19 +162,49 @@ class GameGrid:
             obj.move(x_grid_new, y_grid_new)
             self._possible_cell_step = None
             self._search_possible_step_for_obj_in_gameGrid(obj)
+
         elif isinstance(obj, Chicken):
             for alone_obj in self._full_obj_in_grid:
                 if alone_obj.grid_position == (x_grid_new, y_grid_new):
                     return False
             obj.move(x_grid_new, y_grid_new)
             self._possible_cell_step = None
-            self._search_possible_step_for_obj_in_gameGrid(obj)
-            self._step_fox()
+            self._auto_eat_and_move_fox()
+            self._possible_cell_step = self._search_possible_step_for_obj_in_gameGrid(obj)
 
-    def _step_fox(self):
-        indx_fox = randint(0,1)
-        self._search_possible_step_for_obj_in_gameGrid(self._foxes[indx_fox])
 
+    def _auto_eat_and_move_fox(self):
+        # indx_fox = randint(0,1)
+        # fox = self._foxes[indx_fox]
+
+        is_eat = False
+        for fox in self._foxes:
+            possible_cells_step = self._search_possible_step_for_obj_in_gameGrid(fox)
+            x_fact, y_fact = fox.grid_position
+
+            # fox_auto_step
+            for possible_cell_step in possible_cells_step:
+                if abs(possible_cell_step[0][0] - x_fact == 2) or abs(possible_cell_step[0][1] - y_fact) == 2:
+                    fox.move(possible_cell_step[0][0], possible_cell_step[0][1])
+                    is_eat = True
+                    break
+        
+
+        print('\nEat: ', is_eat)
+
+        if not is_eat:
+            fox = self._foxes[randint(0,1)]
+            x, y = fox.grid_position
+
+            possible_cells_step = self._search_possible_step_for_obj_in_gameGrid(fox)
+            cell = possible_cells_step[randint(0,len(possible_cells_step)-1)]
+            
+            print('X =', x, '  Y =', y)
+            print('Cell =', cell) 
+
+            fox.move(cell[0][0], cell[0][1])
+            
+            
 
 
     def _search_possible_step_for_obj_in_gameGrid(self, obj_gameGrid):
@@ -193,10 +223,12 @@ class GameGrid:
             
             possible_cells.append((obj_x-2,obj_y))
             possible_cells.append((obj_x-1,obj_y))
-            
 
-            x_fact, y_fact = obj_gameGrid.grid_position
+            # search occupied cell
             is_occupied_cell = self._is_occupied_cell(possible_cells, obj_gameGrid)
+            x_fact, y_fact = obj_gameGrid.grid_position
+            
+            # filter possible_cells_step
             new_list_is_occupied_cell = []
             for indx in range(0, len(is_occupied_cell), 2):
                 
@@ -205,9 +237,9 @@ class GameGrid:
                 else:
                     if is_occupied_cell[indx][1]:
                         new_list_is_occupied_cell.append(is_occupied_cell[indx])
-                
-            self._possible_cell_step = new_list_is_occupied_cell
-                
+            possible_cells_step = new_list_is_occupied_cell
+
+            return possible_cells_step
 
         elif isinstance(obj_gameGrid, Chicken):
 
@@ -222,8 +254,7 @@ class GameGrid:
             if obj_x-1 > -1:
                 possible_cells.append((obj_x-1,obj_y))
 
-            self._possible_cell_step = self._is_occupied_cell(possible_cells, obj_gameGrid)
-
+            return self._is_occupied_cell(possible_cells, obj_gameGrid)
 
     def _is_occupied_cell(self, possible_cells, obj):
         """
