@@ -22,7 +22,8 @@ button_color = (int(config["color scheme"]["button_color_r"]),
                 int(config["color scheme"]["button_color_g"]),
                 int(config["color scheme"]["button_color_b"]))
 
-font_path = "assets/fonts/assets/fonts/Pixels.ttf"
+font_path = "assets/fonts/Pixels.ttf"
+arcade.load_font(font_path)
 
 class Button:
     def __init__(self,x, y, width, height, text, image_base, image_hover, action=None):

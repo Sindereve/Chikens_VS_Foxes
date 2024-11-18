@@ -2,6 +2,7 @@ import arcade
 from tools import load_config
 from random import randint
 from gridObj import Chicken, Fox, Plant
+import time
 import os
 
 config = load_config()
@@ -28,13 +29,12 @@ class GameGrid:
     def __init__(self, game_grid = [
             ["0", "0", " ", " ", " ", "0", "0"],
             ["0", "0", " ", " ", " ", "0", "0"],
-            [" ", " ", "F", " ", "F", " ", " "],
+            [" ", " ", " ", " ", "F", " ", " "],
             ["C", "C", "C", "C", "C", "C", "C"],
-            ["C", "C", "C", "C", "C", "C", "C"],
+            ["C", "C", " ", "C", " ", "C", "C"],
             ["0", "0", "C", "C", "C", "0", "0"],
-            ["0", "0", "C", "C", "C", "0", "0"]
+            ["0", "0", " ", "C", " ", "0", "0"]
         ]):
-    
         
         # size sprite 
         self.target_width = 90
@@ -169,74 +169,107 @@ class GameGrid:
                     return False
             obj.move(x_grid_new, y_grid_new)
             self._possible_cell_step = None
-            self._auto_eat_and_move_fox()
-            self._possible_cell_step = self._search_possible_step_for_obj_in_gameGrid(obj)
+            
+            is_eat = False
+            for fox in self._foxes:
+                is_eat = self._auto_eat_and_move_fox(fox)
+                if is_eat == True:
+                    self._possible_cell_step = None
+                    break
 
-
-    def _auto_eat_and_move_fox(self):
+            if not is_eat:
+                self._not_eat_move_fox()    
+                self._possible_cell_step = self._search_possible_step_for_obj_in_gameGrid(obj)
+       
+    def _auto_eat_and_move_fox(self, fox):
         # indx_fox = randint(0,1)
         # fox = self._foxes[indx_fox]
 
-        is_eat = False
-        for fox in self._foxes:
-            possible_cells_step = self._search_possible_step_for_obj_in_gameGrid(fox)
-            x_fact, y_fact = fox.grid_position
+        possible_cells_step = self._search_possible_step_for_obj_in_gameGrid(fox)
+        x_fact, y_fact = fox.grid_position
 
-            # fox_auto_step
-            for possible_cell_step in possible_cells_step:
-                if abs(possible_cell_step[0][0] - x_fact == 2) or abs(possible_cell_step[0][1] - y_fact) == 2:
+        # fox_auto_step
+        for possible_cell_step in possible_cells_step:
+
+            len_for_new_pos_x = possible_cell_step[0][0] - x_fact
+            len_for_new_pos_y = possible_cell_step[0][1] - y_fact
+
+            if abs(len_for_new_pos_x) == 2 or abs(len_for_new_pos_y) == 2:
+                if not self._is_block_cell(possible_cell_step[0][0], possible_cell_step[0][1]):
                     fox.move(possible_cell_step[0][0], possible_cell_step[0][1])
-                    is_eat = True
-                    break
+
+                    grid_pos_del_obj = (x_fact + len_for_new_pos_x // 2,  y_fact + len_for_new_pos_y // 2)
+
+                    self._del_obj_for_pos(grid_pos_del_obj)
+
+                    self._auto_eat_and_move_fox(fox)
+                    return True
+        return False
+
+    def _del_obj_for_pos(self, grid_pos):
         
+        for indx in range(len(self._chickens)):
+            if self._chickens[indx].grid_position == grid_pos:
+                if self._chickens[indx] == self._selected_chicken:
+                    self._selected_chicken = None
+                del self._chickens[indx]
+                break
 
-        print('\nEat: ', is_eat)
+        for indx in range(len(self._foxes)):
+            if self._foxes[indx].grid_position == grid_pos:
+                del self._foxes[indx]
+                break
 
-        if not is_eat:
-            fox = self._foxes[randint(0,1)]
-            x, y = fox.grid_position
+        for indx in range(len(self._plants)):
+            if self._plants[indx].grid_position == grid_pos:
+                del self._plants[indx]
+                break
 
-            possible_cells_step = self._search_possible_step_for_obj_in_gameGrid(fox)
-            cell = possible_cells_step[randint(0,len(possible_cells_step)-1)]
-            
-            print('X =', x, '  Y =', y)
-            print('Cell =', cell) 
+    def _not_eat_move_fox(self):
+        rand = randint(0,len(self._foxes))
+        fox = self._foxes[rand]
 
+        possible_cells_step = self._search_possible_step_for_obj_in_gameGrid(fox)
+        cell = possible_cells_step[randint(0,len(possible_cells_step)-1)]
+        if not self._is_block_cell(cell[0][0],cell[0][1]):
             fox.move(cell[0][0], cell[0][1])
-            
-            
+        else:
+            self._not_eat_move_fox()
 
+    def _is_block_cell(self, x, y):
+        return y >= GRID_SIZE or y < 0 or x >= GRID_SIZE or x < 0
 
     def _search_possible_step_for_obj_in_gameGrid(self, obj_gameGrid):
         if isinstance(obj_gameGrid, Fox):
             obj_x, obj_y = obj_gameGrid.grid_position
             possible_cells = list()
-            
+
             possible_cells.append((obj_x,obj_y+2))
             possible_cells.append((obj_x,obj_y+1))
-            
+
             possible_cells.append((obj_x,obj_y-2))
             possible_cells.append((obj_x,obj_y-1))
-            
+
             possible_cells.append((obj_x+2,obj_y))
             possible_cells.append((obj_x+1,obj_y))
-            
+
             possible_cells.append((obj_x-2,obj_y))
             possible_cells.append((obj_x-1,obj_y))
 
             # search occupied cell
             is_occupied_cell = self._is_occupied_cell(possible_cells, obj_gameGrid)
-            x_fact, y_fact = obj_gameGrid.grid_position
             
             # filter possible_cells_step
             new_list_is_occupied_cell = []
+
             for indx in range(0, len(is_occupied_cell), 2):
-                
                 if is_occupied_cell[indx+1][1]:
                     new_list_is_occupied_cell.append(is_occupied_cell[indx+1])
                 else:
-                    if is_occupied_cell[indx][1]:
+                    if is_occupied_cell[indx][1] and is_occupied_cell[indx+1][2] == 'Chicken':
                         new_list_is_occupied_cell.append(is_occupied_cell[indx])
+                            
+
             possible_cells_step = new_list_is_occupied_cell
 
             return possible_cells_step
@@ -245,8 +278,6 @@ class GameGrid:
 
             obj_x, obj_y = obj_gameGrid.grid_position
             possible_cells = list()
-            if obj_y+1 < GRID_SIZE:
-                possible_cells.append((obj_x,obj_y+1))
             if obj_y-1 > -1:
                 possible_cells.append((obj_x,obj_y-1))
             if obj_x+1 < GRID_SIZE:
@@ -263,30 +294,33 @@ class GameGrid:
                         info one element in list [cell, occupied]
                             - cell = (x, y)
                             - occupied = bool
+                            - type obj in cell = str
         """
 
         if isinstance(obj, Fox):
             info_cell_TF = list()
 
             for possible_cell in possible_cells:
-                info_cell_TF.append([possible_cell, True])
+                info_cell_TF.append([possible_cell, True, None])
 
             for obj in self._full_obj_in_grid:
                 for cell_indx in range(len(info_cell_TF)):
                     if obj.grid_position == info_cell_TF[cell_indx][0]:
                         info_cell_TF[cell_indx][1] = False
+                        info_cell_TF[cell_indx][2] = obj.typeOb
                                     
         elif isinstance(obj, Chicken):
 
             info_cell_TF = list()
 
             for possible_cell in possible_cells:
-                info_cell_TF.append([possible_cell, True])
+                info_cell_TF.append([possible_cell, True, None])
 
             for obj in self._full_obj_in_grid:
                 for cell_indx in range(len(info_cell_TF)):
                     if obj.grid_position == info_cell_TF[cell_indx][0]:
                         info_cell_TF[cell_indx][1] = False
+                        info_cell_TF[cell_indx][2] = type(obj)
 
         return info_cell_TF
 
@@ -296,4 +330,9 @@ class GameGrid:
             self.turn = "fox"
         else:
             self.turn = "chicken"
+
+    def update(self, delta_time):
+        current_time = time.time()
+        self.time_last_move = current_time
+
         

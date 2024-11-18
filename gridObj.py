@@ -39,6 +39,10 @@ class Object_Cell(arcade.Sprite):
         self._grid_position = (new_x, new_y)
 
     @property
+    def typeOb(self):
+        pass
+
+    @property
     def grid_position(self):
         x, y = self._grid_position
         x =  x + LEFT_EDGE_GRID//CELL_SIZE - LEFT_EDGE_GRID//CELL_SIZE
@@ -52,9 +56,14 @@ class Chicken(Object_Cell):
         super().__init__(x, y, texture_path)
         # Selected chicken
         self.selected = False
+        self._name_class = 'Chicken'
         
     def on_click(self):
         self.selected = not self.selected
+    
+    @property
+    def typeOb(self):
+        return self._name_class
 
     def draw(self):
         super().draw()
@@ -68,9 +77,21 @@ class Chicken(Object_Cell):
 class Fox(Object_Cell):
     def __init__(self, x, y, texture_path):
         super().__init__(x, y, texture_path)
+        self._name_class = 'Fox'
+
+    @property
+    def typeOb(self):
+        return self._name_class
 
 
 
 class Plant(Object_Cell):
     def __init__(self, x, y, texture_path):
         super().__init__(x, y, texture_path)
+        self._name_class = 'Plant'
+
+    @property
+    def typeOb(self):
+        return self._name_class
+
+    

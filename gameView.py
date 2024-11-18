@@ -72,4 +72,5 @@ class GameView(arcade.View):
 
     def update(self, delta_time):
         self.bg.update()
+        self.game_grid.update()
         
