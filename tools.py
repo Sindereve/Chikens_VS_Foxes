@@ -137,14 +137,14 @@ class InfoBoard:
         #draw_rectangle_with_top_left_corner_rounded(self._x, self._y, self._width, self._height, (211, 211, 211, 200), 20)
 
 class ButtonBoard:
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y, width, height, functional = []):
         self._x = x
         self._y = y
         self._width = width
         self._height = height
-        self._buttons = self._create_button()
+        self._buttons = self._create_button(functional)
 
-    def _create_button(self):
+    def _create_button(self, functional):
         buttons = []
 
         step_in_down = 80
@@ -153,25 +153,35 @@ class ButtonBoard:
         button_height = 70
         
 
+
         buttons.append(Button(self._x, y_center, 
-                              button_width, button_height, 'Exit',
-                              'assets/menuView/button/exit_button/folder-2.png', 
-                              'assets/menuView/button/exit_button/folder-4.png', 
+                              button_width, button_height, 'Restart',
+                              'assets/menuView/button/center_button/folder-1.png', 
+                              'assets/menuView/button/center_button/folder-2.png', 
+                               ))
+
+        buttons.append(Button(self._x, y_center - step_in_down*len(buttons), 
+                              button_width, button_height, 'info',
+                              'assets/menuView/button/center_button/folder-1.png', 
+                              'assets/menuView/button/center_button/folder-2.png', 
                                ))
 
         buttons.append(Button(self._x, y_center - step_in_down*len(buttons), 
                               button_width, button_height, 'Exit',
                               'assets/menuView/button/exit_button/folder-2.png', 
-                              'assets/menuView/button/exit_button/folder-4.png', 
-                               ))
-
-        buttons.append(Button(self._x, y_center - step_in_down*len(buttons), 
-                              button_width, button_height, 'Exit',
-                              'assets/menuView/button/exit_button/folder-2.png', 
-                              'assets/menuView/button/exit_button/folder-4.png', 
+                              'assets/menuView/button/exit_button/folder-4.png',
+                              functional[0] 
                                ))
 
         return buttons
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        for button in self._buttons:
+            button.check_hover(x,y)
+
+    def check_click(self, x, y):
+        for button in self._buttons:
+            button.check_click(x, y)
 
     def draw(self):
         """ Draw """

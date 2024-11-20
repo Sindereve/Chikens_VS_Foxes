@@ -19,7 +19,6 @@ class Game(arcade.Window):
         self._menu_view = Menu_View()
         self.show_view(self._menu_view)
 
-
 def main():
     window = Game()
     arcade.run()

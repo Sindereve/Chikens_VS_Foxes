@@ -27,14 +27,25 @@ class GameView(arcade.View):
         self.bg = AnimatedBackground("assets/gameView/background", 
                                         SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 
                                         SCREEN_WIDTH, SCREEN_HEIGHT)
+
+        self._button_board = self._create_button_board()
+
         self._info_board = InfoBoard(SCREEN_WIDTH - 150, int(SCREEN_HEIGHT//2 - SCREEN_HEIGHT*0.1), 
                                         200, int(SCREEN_HEIGHT - SCREEN_HEIGHT*0.2), 20, 2, 0, 'Chickens')
 
-        self._button_board = ButtonBoard(150, int(SCREEN_HEIGHT//2 - SCREEN_HEIGHT*0.1), 
-                                        200, int(SCREEN_HEIGHT - SCREEN_HEIGHT*0.2))
-
         print(SCREEN_WIDTH // 2, int(SCREEN_HEIGHT - SCREEN_HEIGHT * 0.05))
         self.game_grid = GameGrid()
+
+    def _create_button_board(self):
+        my_functional = [self._go_last_view]
+        button_board = ButtonBoard(150, int(SCREEN_HEIGHT//2 - SCREEN_HEIGHT*0.1), 
+                                        200, int(SCREEN_HEIGHT - SCREEN_HEIGHT*0.2), my_functional)
+        return button_board
+    
+    def _go_last_view(self):
+        print('--Exit work-- in View')
+        self.window.show_view(self.__last_view)
+
 
     def on_draw(self):
         arcade.start_render()
@@ -43,6 +54,9 @@ class GameView(arcade.View):
         self._button_board.draw()
         self._draw_title()
         self.game_grid.draw()
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        self._button_board.on_mouse_motion(x, y, dx, dy)
 
     def _draw_title(self):
         text = "Chickens VS Foxes" 
@@ -59,16 +73,23 @@ class GameView(arcade.View):
                     anchor_x='center', anchor_y='center')
 
     def on_mouse_press(self, x, y, button, modifiers):
-        """Обработка кликов мыши в игре"""
+        "Click mouse"
         self.game_grid.on_mouse_press(x, y)
+        self._button_board.check_click(x, y)
+        # self._button_board.on_mouse_press(x, y)
 
     def on_key_press(self, symbol, modifiers):
-        """Обработка нажатий клавиш в игре"""
+        """Click key"""
 
         if symbol == arcade.key.ESCAPE:
             self.window.show_view(self.__last_view)
         else:
-            self.game_grid.on_key_press(symbol, modifiers)       
+            self.game_grid.on_key_press(symbol, modifiers)
+            self._info_board.update_info(self.game_grid.count_chicken,
+                                         self.game_grid.count_fox,
+                                         self.game_grid.number_step,
+                                         self.game_grid.who_step)
+
 
     def update(self, delta_time):
         self.bg.update()
