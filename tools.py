@@ -1,6 +1,7 @@
 import arcade 
 import configparser
 import os
+import random
 
 def load_config(config_file="config.ini"):
     config = configparser.ConfigParser()
@@ -67,7 +68,7 @@ class Button:
                            self.y - self.height / 2 <= y <= self.y + self.height / 2)
         self.draw()
 
-class InfoBoard:
+class InfoBoardForGame:
     def __init__(self, x, y, width, height, number_chickens, number_foxes, number_step, who_step):
         self._x = x
         self._y = y
@@ -158,12 +159,14 @@ class ButtonBoard:
                               button_width, button_height, 'Restart',
                               'assets/menuView/button/center_button/folder-1.png', 
                               'assets/menuView/button/center_button/folder-2.png', 
+                              functional[2]
                                ))
 
         buttons.append(Button(self._x, y_center - step_in_down*len(buttons), 
                               button_width, button_height, 'info',
                               'assets/menuView/button/center_button/folder-1.png', 
                               'assets/menuView/button/center_button/folder-2.png', 
+                               functional[1]
                                ))
 
         buttons.append(Button(self._x, y_center - step_in_down*len(buttons), 
@@ -275,3 +278,137 @@ class BlinkingText:
         elif self._alpha >= 255:
             self._alpha_direction *= -1
             self._alpha = 255
+
+class RulesView(arcade.View):
+    def __init__(self, window_width, window_height):
+        super().__init__()
+        self.button_width = 200
+        self.button_height = 50
+        self._window_width = window_width
+        self._window_height = window_height
+        
+        self.button = (Button(window_width // 2, int(window_height*0.2), 
+                              int(window_width * 0.15), int(window_height*0.1), 'Okay',
+                              'assets/rulesView/button/folder-1.png', 
+                              'assets/rulesView/button/folder-2.png',
+                              self._exit
+                               ))
+
+        self.bg = AnimatedBackground("assets/gameView/background", 
+                                        window_width // 2, window_height // 2, 
+                                        window_width, window_height)
+        
+
+    def on_draw(self):
+        arcade.start_render()
+
+        self.bg.draw()
+
+        # прозрачный фончик
+        arcade.draw_rectangle_filled(self._window_width // 2, self._window_height // 2, 
+                                     self._window_width, self._window_height, 
+                                     (255, 255, 255, 190)) 
+
+        # центральный квадратик
+        arcade.draw_rectangle_filled(self._window_width // 2, self._window_height // 2, 
+                                     self._window_width - 100, self._window_height - 100, 
+                                     (255, 255, 255))
+
+        # Заголовок
+        arcade.draw_text("Rules game", self._window_width // 2, self._window_height // 2 + 300,
+                         arcade.color.BLACK, 40, anchor_x="center", font_name="fibberish",)
+
+        # Текст правил
+        text = (
+            "Welcome to the game Chickens vs. Foxes!\n"
+            "The rules of the game are simple:\n"
+            " * Chickens can move only to the right, down, or left.\n"
+            " * Foxes must eat chickens whenever possible.\n"
+            " * Foxes eat chickens like in checkers but only vertically and horizontally.\n"
+            " * Chickens win if 9 chickens reach the bottom part of the game board.\n"
+            " * Foxes win if fewer than 9 chickens remain.\n"
+            "Good luck, you can win this! Oh, and one more thing—you’re playing as the chickens!"
+        )
+        arcade.draw_text(text, self._window_width // 2, self._window_height // 2, 
+                         arcade.color.BLACK, 30, anchor_x="center", anchor_y="center",
+                         multiline=True, width=self._window_width - 150, font_name="fibberish",)
+
+        self.button.draw()
+
+    def _exit(self):
+        self.window.show_view(self.window.previous_view)
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        self.button.check_click(x,y)
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        self.button.check_hover(x,y)
+
+class ResulGame(arcade.View):
+    def __init__(self, window_height, window_width):
+        super().__init__()
+        self._window_height = window_height
+        self._window_width = window_width
+        
+        self._text_opacity = 0
+        self._text_scale = 1.0
+
+        self.button = (Button(window_width // 2, int(window_height*0.2), 
+                              int(window_width * 0.15), int(window_height*0.1), 'In main menu',
+                              'assets/rulesView/button/folder-1.png', 
+                              'assets/rulesView/button/folder-2.png',
+                              self._exit
+                               ))
+
+        
+        self._confetti = []
+        for _ in range(100):
+            confetto = {
+                "x": random.randint(0, self._window_width),
+                "y": random.randint(self._window_height, self._window_height + 200),
+                "dx": random.uniform(-2, 2),
+                "dy": random.uniform(-1, -4),
+                "color": random.choice([arcade.color.RED, arcade.color.YELLOW, arcade.color.GREEN,
+                                        arcade.color.BLUE, arcade.color.PINK, arcade.color.PURPLE])
+            }
+            self._confetti.append(confetto)
+
+    def on_draw(self):
+        arcade.start_render()
+
+        for confetto in self._confetti:
+            arcade.draw_circle_filled(confetto["x"], confetto["y"], 5, confetto["color"])
+
+            arcade.draw_text("YOU WIN!", self._window_width // 2, self._window_height // 2,
+                 color=(0, 0, 0, self._text_opacity),
+                 font_size=50 * self._text_scale,
+                 anchor_x="center", anchor_y="center",
+                 bold=True, align="center", font_name="fibberish",
+                 multiline=True, width=self._window_width - 100)  # Указание ширины области
+
+
+            
+            self.button.draw()
+        
+    def on_update(self, delta_time):
+        # анимация конфетти
+        for confetto in self._confetti:
+            confetto["x"] += confetto["dx"]
+            confetto["y"] += confetto["dy"]
+            if confetto["y"] < 0:
+                confetto["x"] = random.randint(0, self._window_width)
+                confetto["y"] = random.randint(self._window_height, self._window_height + 200)
+
+        if self._text_opacity < 255:
+            self._text_opacity += 5
+        if self._text_opacity < 2.0:
+            self._text_opacity += 0.01
+
+    def _exit(self):
+        self.window.show_view(self.window.previous_view)
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        self.button.check_click(x,y)
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        self.button.check_hover(x,y)

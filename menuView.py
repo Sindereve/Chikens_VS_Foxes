@@ -1,5 +1,5 @@
 import arcade
-from tools import config, Button, AnimatedBackground, BlinkingText
+from tools import config, Button, AnimatedBackground, BlinkingText, RulesView
 from gameView import GameView
 
 # SCREEN
@@ -42,14 +42,14 @@ class Menu_View(arcade.View):
                               button_width, button_height, 'Exit',
                               'assets/menuView/button/exit_button/folder-2.png', 
                               'assets/menuView/button/exit_button/folder-4.png', 
-                               self._quit_game))
+                               self.quit_game))
 
         # Info Game
         buttons.append(Button(SCREEN_WIDTH // 2, button_exit_with + button_indention * len(buttons),
                               button_width, button_height, 'Info', 
                               'assets/menuView/button/center_button/folder-1.png', 
                               'assets/menuView/button/center_button/folder-2.png', 
-                              None))
+                              self.show_rules))
         
         # Leader boart
         buttons.append(Button(SCREEN_WIDTH // 2, button_exit_with + button_indention * len(buttons),
@@ -62,14 +62,13 @@ class Menu_View(arcade.View):
         buttons.append(Button(SCREEN_WIDTH // 2, button_exit_with + button_indention * len(buttons),
                               button_width, button_height, 'Start Game',
                               "assets/menuView/button/start_button/folder-1.png",
-                              "assets/menuView/button/start_button/folder-2.png", self._start_game))
+                              "assets/menuView/button/start_button/folder-2.png", self.start_game))
 
         return buttons
     
     def on_mouse_motion(self, x, y, dx, dy):
         for button in self._buttons:
             button.check_hover(x,y)
-
 
     def on_draw(self):
         arcade.start_render()
@@ -99,9 +98,14 @@ class Menu_View(arcade.View):
         self.bg.update() 
         self._title.update(delta_time)
 
-    def _start_game(self):
+    def start_game(self):
         gameView = GameView(self)
         self.window.show_view(gameView)
 
-    def _quit_game(self):
+    def quit_game(self):
         self.window.close()
+
+    def show_rules(self):
+        rules_view = RulesView(SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.window.previous_view = self 
+        self.window.show_view(rules_view)

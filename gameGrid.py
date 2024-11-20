@@ -191,6 +191,7 @@ class GameGrid:
             if self._selected_chicken:
                 self._selected_chicken.on_click()
                 self._selected_chicken = None
+            
        
     def _auto_eat_and_move_fox(self):
         self._number_step+=1
@@ -482,6 +483,20 @@ class GameGrid:
         else:
             self._turn = "chicken"
     
+    @property
+    def win_or_loos(self):
+        
+        counte_chiken_in_win_possition = 0 
+        for chiken in self._chickens:
+            if chiken.grid_position[1] < 3:
+                counte_chiken_in_win_possition += 1
+
+        if self.count_chicken < 9:
+            return 'loss'
+        elif counte_chiken_in_win_possition > 8:
+            return 'win'
+        return 'game is working'
+
     @property
     def count_chicken(self):
         return len(self._chickens)

@@ -1,5 +1,5 @@
 import arcade
-from tools import config, AnimatedBackground, InfoBoard, ButtonBoard
+from tools import config, AnimatedBackground, InfoBoardForGame, ButtonBoard, RulesView, ResulGame
 from gameGrid import GameGrid
 
 # SCREEN
@@ -30,21 +30,28 @@ class GameView(arcade.View):
 
         self._button_board = self._create_button_board()
 
-        self._info_board = InfoBoard(SCREEN_WIDTH - 150, int(SCREEN_HEIGHT//2 - SCREEN_HEIGHT*0.1), 
+        self._info_board = InfoBoardForGame(SCREEN_WIDTH - 150, int(SCREEN_HEIGHT//2 - SCREEN_HEIGHT*0.1), 
                                         200, int(SCREEN_HEIGHT - SCREEN_HEIGHT*0.2), 20, 2, 0, 'Chickens')
 
-        print(SCREEN_WIDTH // 2, int(SCREEN_HEIGHT - SCREEN_HEIGHT * 0.05))
         self.game_grid = GameGrid()
 
     def _create_button_board(self):
-        my_functional = [self._go_last_view]
+        my_functional = [self.go_last_view, self.show_rules ,self.restart_game_grid]
         button_board = ButtonBoard(150, int(SCREEN_HEIGHT//2 - SCREEN_HEIGHT*0.1), 
                                         200, int(SCREEN_HEIGHT - SCREEN_HEIGHT*0.2), my_functional)
         return button_board
     
-    def _go_last_view(self):
-        print('--Exit work-- in View')
+    def go_last_view(self):
+        print('-- Exit gameView --')
         self.window.show_view(self.__last_view)
+    
+    def info_board(self):
+        pass
+
+    def restart_game_grid(self):
+        print('-- Restar game --')
+        self.game_grid = GameGrid()
+
 
 
     def on_draw(self):
@@ -89,7 +96,20 @@ class GameView(arcade.View):
                                          self.game_grid.count_fox,
                                          self.game_grid.number_step,
                                          self.game_grid.who_step)
+            self.show_win_view()
+            # if self.game_grid.win_or_loos == 'win':
+                
+                
 
+    def show_win_view(self):
+        rusel_view = ResulGame(SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.window.previous_view = self 
+        self.window.show_view(rusel_view)
+
+    def show_rules(self):
+        rules_view = RulesView(SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.window.previous_view = self 
+        self.window.show_view(rules_view)
 
     def update(self, delta_time):
         self.bg.update()
