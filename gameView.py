@@ -1,5 +1,5 @@
 import arcade
-from tools import config, AnimatedBackground, InfoBoardForGame, ButtonBoard, RulesView, ResulGame
+from tools import config, AnimatedBackground, InfoBoardForGame, ButtonBoard, RulesView, ResulWinGame, ResulLoseGame
 from gameGrid import GameGrid
 
 # SCREEN
@@ -42,7 +42,6 @@ class GameView(arcade.View):
         return button_board
     
     def go_last_view(self):
-        print('-- Exit gameView --')
         self.window.show_view(self.__last_view)
     
     def info_board(self):
@@ -51,8 +50,6 @@ class GameView(arcade.View):
     def restart_game_grid(self):
         print('-- Restar game --')
         self.game_grid = GameGrid()
-
-
 
     def on_draw(self):
         arcade.start_render()
@@ -96,13 +93,20 @@ class GameView(arcade.View):
                                          self.game_grid.count_fox,
                                          self.game_grid.number_step,
                                          self.game_grid.who_step)
-            self.show_win_view()
-            # if self.game_grid.win_or_loos == 'win':
+            
+            result_step = self.game_grid.win_or_loos
+            if result_step == 'win':
+                self.show_win_view()
+            elif result_step == 'loss':
+                self.show_loss_view()
                 
-                
-
     def show_win_view(self):
-        rusel_view = ResulGame(SCREEN_WIDTH, SCREEN_HEIGHT)
+        rusel_view = ResulWinGame(SCREEN_WIDTH, SCREEN_HEIGHT, self.go_last_view)
+        self.window.previous_view = self 
+        self.window.show_view(rusel_view)
+
+    def show_loss_view(self):
+        rusel_view = ResulLoseGame(SCREEN_WIDTH, SCREEN_HEIGHT, self.go_last_view)
         self.window.previous_view = self 
         self.window.show_view(rusel_view)
 

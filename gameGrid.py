@@ -224,10 +224,11 @@ class GameGrid:
             for info_do_fox in info_do_foxs:
                 if info_do_fox[0] == self._foxes[number_fox]:
                     info_step = info_do_fox[2]
-                    number_step = randint(0, len(info_step)-1)
-                    x, y = info_step[number_step][0][0], info_step[number_step][0][1]
-                    self._move_obj(self._foxes[number_fox] , x, y)
-                    self._switch_turn()
+                    if len(info_step)-1 > 0:
+                        number_step = randint(0, len(info_step)-1)
+                        x, y = info_step[number_step][0][0], info_step[number_step][0][1]
+                        self._move_obj(self._foxes[number_fox] , x, y)
+                        self._switch_turn()
                     break
 
     def _del_obj_for_pos(self, grid_pos):
@@ -485,7 +486,9 @@ class GameGrid:
     
     @property
     def win_or_loos(self):
-        
+        '''
+            return 'loss'/'win'/'game is working'
+        '''
         counte_chiken_in_win_possition = 0 
         for chiken in self._chickens:
             if chiken.grid_position[1] < 3:

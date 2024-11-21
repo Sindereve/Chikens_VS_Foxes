@@ -1,75 +1,54 @@
 import arcade
-import random
 
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
-SCREEN_TITLE = "Victory Animation"
-
-class VictoryAnimation(arcade.View):
-    def __init__(self):
-        super().__init__()
-        self.confetti = []
-        self.text_opacity = 0
-        self.text_scale = 1.0
-        self.music = None
-
-    def setup(self):
-        # Конфетти
-        for _ in range(100):
-            confetto = {
-                "x": random.randint(0, SCREEN_WIDTH),
-                "y": random.randint(SCREEN_HEIGHT, SCREEN_HEIGHT + 200),
-                "dx": random.uniform(-2, 2),
-                "dy": random.uniform(-1, -4),
-                "color": random.choice([arcade.color.RED, arcade.color.YELLOW, arcade.color.GREEN,
-                                        arcade.color.BLUE, arcade.color.PINK, arcade.color.PURPLE])
-            }
-            self.confetti.append(confetto)
+class GameView(arcade.View):
+    def __init__(self, window):
+        super().__init__(window)
+        self.message = "Game in Progress!"
 
     def on_draw(self):
-        """Отображение победной анимации."""
-        arcade.start_render()
+        self.clear()
+        arcade.draw_text(self.message, self.window.width // 2, self.window.height // 2,
+                         arcade.color.WHITE, 24, anchor_x="center")
 
-        # Фон
-        arcade.draw_rectangle_filled(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, SCREEN_WIDTH, SCREEN_HEIGHT, arcade.color.BLACK)
+    def on_key_press(self, symbol, modifiers):
+        # Нажмите любую клавишу, чтобы показать результат
+        if symbol == arcade.key.ENTER:
+            result_view = ResultView(self, self.window)
+            self.window.show_view(result_view)
 
-        # Конфетти
-        for confetto in self.confetti:
-            arcade.draw_circle_filled(confetto["x"], confetto["y"], 5, confetto["color"])
 
-        # Текст победы
-        arcade.draw_text("YOU WIN!", SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
-                         arcade.color.WHITE, 50 * self.text_scale, anchor_x="center", anchor_y="center",
-                           width=SCREEN_WIDTH//2, align="center", font_name="fibberish")
+class ResultView(arcade.View):
+    def __init__(self, game_view, window):
+        super().__init__(window)
+        self.game_view = game_view
+        self.transparency = 150  # Уровень прозрачности (0 - полностью прозрачный, 255 - непрозрачный)
 
-    def on_update(self, delta_time):
-        """Обновление состояния анимации."""
-        # Анимация конфетти
-        for confetto in self.confetti:
-            confetto["x"] += confetto["dx"]
-            confetto["y"] += confetto["dy"]
-            if confetto["y"] < 0:
-                confetto["x"] = random.randint(0, SCREEN_WIDTH)
-                confetto["y"] = random.randint(SCREEN_HEIGHT, SCREEN_HEIGHT + 200)
+    def on_draw(self):
+        # Сначала рисуем содержимое предыдущего view (GameView)
+        self.game_view.on_draw()
 
-        # Анимация текста
-        if self.text_opacity < 255:
-            self.text_opacity += 5
-        if self.text_scale < 2.0:
-            self.text_scale += 0.01
+        # Добавляем полупрозрачный фон поверх
+        arcade.draw_rectangle_filled(self.window.width // 2, self.window.height // 2,
+                                     self.window.width, self.window.height,
+                                     (0, 0, 0, self.transparency))
 
-    def on_key_press(self, key, modifiers):
-        """Нажатие клавиши для выхода."""
-        if key == arcade.key.ESCAPE:
-            arcade.exit()
+        # Отображаем текст результата
+        arcade.draw_text("YOU WIN!", self.window.width // 2, self.window.height // 2,
+                         arcade.color.YELLOW, 36, anchor_x="center", bold=True)
 
-def main():
-    """Основной метод."""
-    window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-    victory_view = VictoryAnimation()
-    victory_view.setup()
-    window.show_view(victory_view)
-    arcade.run()
+    def on_key_press(self, symbol, modifiers):
+        # Возвращаемся к игровому экрану
+        if symbol == arcade.key.ESCAPE:
+            self.window.show_view(self.game_view)
+
+
+class MyGame(arcade.Window):
+    def __init__(self):
+        super().__init__(800, 600, "Overlay Example")
+        self.current_view = GameView(self)
+        self.show_view(self.current_view)
+
 
 if __name__ == "__main__":
-    main()
+    MyGame()
+    arcade.run()

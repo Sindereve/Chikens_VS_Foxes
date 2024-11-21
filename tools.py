@@ -344,22 +344,26 @@ class RulesView(arcade.View):
     def on_mouse_motion(self, x, y, dx, dy):
         self.button.check_hover(x,y)
 
-class ResulGame(arcade.View):
-    def __init__(self, window_height, window_width):
+class ResulWinGame(arcade.View):
+    def __init__(self, window_width, window_height, go_in_menu):
         super().__init__()
+        self._go_in_menu = go_in_menu
         self._window_height = window_height
         self._window_width = window_width
-        
+
+        self._bg = AnimatedBackground("assets/gameView/background", 
+                                        window_width // 2, window_height // 2, 
+                                        window_width, window_height)
+
         self._text_opacity = 0
         self._text_scale = 1.0
 
         self.button = (Button(window_width // 2, int(window_height*0.2), 
-                              int(window_width * 0.15), int(window_height*0.1), 'In main menu',
+                              int(window_width * 0.3), int(window_height*0.1), 'Main menu',
                               'assets/rulesView/button/folder-1.png', 
                               'assets/rulesView/button/folder-2.png',
-                              self._exit
+                              go_in_menu
                                ))
-
         
         self._confetti = []
         for _ in range(100):
@@ -376,19 +380,18 @@ class ResulGame(arcade.View):
     def on_draw(self):
         arcade.start_render()
 
+        self._bg.draw()
+
         for confetto in self._confetti:
             arcade.draw_circle_filled(confetto["x"], confetto["y"], 5, confetto["color"])
 
-            arcade.draw_text("YOU WIN!", self._window_width // 2, self._window_height // 2,
+        arcade.draw_text("YOU WIN!", self._window_width // 2, self._window_height // 2,
                  color=(0, 0, 0, self._text_opacity),
-                 font_size=50 * self._text_scale,
+                 font_size=30 * self._text_scale,
                  anchor_x="center", anchor_y="center",
-                 bold=True, align="center", font_name="fibberish",
-                 multiline=True, width=self._window_width - 100)  # Указание ширины области
-
-
+                 font_name="fibberish")  
             
-            self.button.draw()
+        self.button.draw()
         
     def on_update(self, delta_time):
         # анимация конфетти
@@ -400,12 +403,57 @@ class ResulGame(arcade.View):
                 confetto["y"] = random.randint(self._window_height, self._window_height + 200)
 
         if self._text_opacity < 255:
-            self._text_opacity += 5
-        if self._text_opacity < 2.0:
-            self._text_opacity += 0.01
+            self._text_opacity += 1
+        if self._text_scale < 2.0:
+            self._text_scale += 0.01
 
-    def _exit(self):
-        self.window.show_view(self.window.previous_view)
+    def on_mouse_press(self, x, y, button, modifiers):
+        self.button.check_click(x,y)
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        self.button.check_hover(x,y)
+
+
+class ResulLoseGame(arcade.View):
+    def __init__(self, window_width, window_height, go_in_menu):
+        super().__init__()
+        self._go_in_menu = go_in_menu
+        self._window_height = window_height
+        self._window_width = window_width
+
+        self._bg = AnimatedBackground("assets/gameView/background", 
+                                        window_width // 2, window_height // 2, 
+                                        window_width, window_height)
+
+        self._text_opacity = 0
+        self._text_scale = 1.0
+
+        self.button = (Button(window_width // 2, int(window_height*0.2), 
+                              int(window_width * 0.3), int(window_height*0.1), 'Main menu',
+                              'assets/rulesView/button/folder-1.png', 
+                              'assets/rulesView/button/folder-2.png',
+                              go_in_menu
+                               ))
+
+    def on_draw(self):
+        arcade.start_render()
+
+        self._bg.draw()
+
+        arcade.draw_text("YOU LOSE!", self._window_width // 2, self._window_height // 2,
+                 color=(255, 0, 0, self._text_opacity),
+                 font_size=30 * self._text_scale,
+                 anchor_x="center", anchor_y="center",
+                 font_name="fibberish")  
+            
+        self.button.draw()
+        
+    def on_update(self, delta_time):
+
+        if self._text_opacity < 255:
+            self._text_opacity += 1
+        if self._text_scale < 2.0:
+            self._text_scale += 0.01
 
     def on_mouse_press(self, x, y, button, modifiers):
         self.button.check_click(x,y)

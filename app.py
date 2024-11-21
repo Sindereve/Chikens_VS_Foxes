@@ -16,7 +16,7 @@ class Game(arcade.Window):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, "Chickens VS Fox")
         arcade.set_background_color(arcade.csscolor.WHITE)
 
-        self._menu_view = Menu_View()
+        self._menu_view = Menu_View(self)
         self.previous_view = None
         
         self.show_view(self._menu_view)
