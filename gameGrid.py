@@ -28,11 +28,11 @@ class GameGrid:
     def __init__(self, game_grid = [
             ["0", "0", " ", " ", " ", "0", "0"],
             ["0", "0", " ", " ", " ", "0", "0"],
-            [" ", " ", "F", " ", "F", " ", " "],
-            ["C", "C", "C", "C", "C", "C", "C"],
-            ["C", "C", "C", "C", "C", "C", "C"],
+            [" ", " ", "F", " ", " ", " ", " "],
+            ["C", "C", "C", "C", "C", " ", "C"],
+            ["C", "C", " ", "C", " ", "C", " "],
             ["0", "0", "C", "C", "C", "0", "0"],
-            ["0", "0", "C", "C", "C", "0", "0"]
+            ["0", "0", " ", "C", " ", "0", "0"]
         ]):
         
         # size sprite 
@@ -220,16 +220,26 @@ class GameGrid:
                     self._switch_turn()
                     break
         if is_eat == False:
-            number_fox = randint(0, len(self._foxes)-1)
-            for info_do_fox in info_do_foxs:
-                if info_do_fox[0] == self._foxes[number_fox]:
-                    info_step = info_do_fox[2]
-                    if len(info_step)-1 > 0:
-                        number_step = randint(0, len(info_step)-1)
-                        x, y = info_step[number_step][0][0], info_step[number_step][0][1]
-                        self._move_obj(self._foxes[number_fox] , x, y)
-                        self._switch_turn()
+            self._random_step_fox_no_eat(info_do_foxs)
+            
+
+    def _random_step_fox_no_eat(self, info_do_foxs):
+        number_fox = randint(0, len(self._foxes)-1)
+        for info_fox in info_do_foxs:
+            print(info_fox)
+        
+        for info_do_fox in info_do_foxs:
+            if info_do_fox[0] == self._foxes[number_fox]:
+                info_step = info_do_fox[2]
+                if len(info_step) > 0:
+                    number_step = randint(0, len(info_step)-1)
+                    x, y = info_step[number_step][0][0], info_step[number_step][0][1]
+                    self._move_obj(self._foxes[number_fox] , x, y)
+                    self._switch_turn()
                     break
+                else:
+                    self._random_step_fox_no_eat( info_do_foxs)
+
 
     def _del_obj_for_pos(self, grid_pos):
         
