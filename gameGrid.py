@@ -28,11 +28,11 @@ class GameGrid:
     def __init__(self, game_grid = [
             ["0", "0", " ", " ", " ", "0", "0"],
             ["0", "0", " ", " ", " ", "0", "0"],
-            [" ", " ", "F", " ", " ", " ", " "],
-            ["C", "C", "C", "C", "C", " ", "C"],
-            ["C", "C", " ", "C", " ", "C", " "],
+            [" ", " ", "F", " ", "F", " ", " "],
+            ["C", "C", "C", "C", "C", "C", "C"],
+            ["C", "C", "C", "C", "C", "C", "C"],
             ["0", "0", "C", "C", "C", "0", "0"],
-            ["0", "0", " ", "C", " ", "0", "0"]
+            ["0", "0", "C", "C", "C", "0", "0"]
         ]):
         
         # size sprite 
@@ -501,7 +501,7 @@ class GameGrid:
         '''
         counte_chiken_in_win_possition = 0 
         for chiken in self._chickens:
-            if chiken.grid_position[1] < 3:
+            if chiken.grid_position[1] < 3 and chiken.grid_position[0] > 1 and chiken.grid_position[0] < 5:
                 counte_chiken_in_win_possition += 1
 
         if self.count_chicken < 9:
