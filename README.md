@@ -90,3 +90,5 @@ The game includes:
 
 - Состояние поля после нескольких ходов и поедания курицы (Game Field After Several Moves and Chicken Eaten):  
   ![Состояние поля после нескольких ходов (Game Field After Several Moves)](path/to/screenshot5.png)
+
+
