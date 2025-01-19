@@ -77,18 +77,18 @@ The game includes:
 ## 🖼️ Снимки экрана (Screenshots)
 
 - Главное меню (Main Menu):  
-  ![Главное меню (Main Menu)](path/to/screenshot1.png)
+  ![Главное меню (Main Menu)](assets/imagesReadme/screenshort1.png)
 
 - Правила игры (Game Rules):  
-  ![Правила игры (Game Rules)](path/to/screenshot2.png)
+  ![Правила игры (Game Rules)](assets/imagesReadme/screenshort2.png)
 
 - Игровое поле (Game Field):  
-  ![Игровое поле (Game Field)](path/to/screenshot3.png)
+  ![Игровое поле (Game Field)](assets/imagesReadme/screenshort3.png)
 
 - Как выглядит выбор курицы (Chicken Selection):  
-  ![Как выглядит выбор курицы (Chicken Selection)](path/to/screenshot4.png)
+  ![Как выглядит выбор курицы (Chicken Selection)](assets/imagesReadme/screenshort4.png)
 
 - Состояние поля после нескольких ходов и поедания курицы (Game Field After Several Moves and Chicken Eaten):  
-  ![Состояние поля после нескольких ходов (Game Field After Several Moves)](path/to/screenshot5.png)
+  ![Состояние поля после нескольких ходов (Game Field After Several Moves)](assets/imagesReadme/screenshort5.png)
 
 
