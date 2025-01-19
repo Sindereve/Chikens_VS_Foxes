@@ -13,7 +13,7 @@ class Game(arcade.Window):
     """    
 
     def __init__(self):
-        super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, "Chickens VS Fox")
+        super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, "Chickens VS Foxs")
         arcade.set_background_color(arcade.csscolor.WHITE)
 
         self._menu_view = Menu_View(self)
